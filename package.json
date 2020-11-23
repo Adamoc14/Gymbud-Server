@@ -4,9 +4,17 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "nodemon -i app.js",
+    "test": "nodemon --inspect app.js",
     "start": "node app.js"
   },
+  "type": "module",
   "author": "Adam O' Ceallaigh",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.15",
+    "nodemon": "^2.0.6",
+    "npm": "^6.14.9",
+    "upgrade": "^1.1.0"
+  }
 }
