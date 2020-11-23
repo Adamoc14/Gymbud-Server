@@ -1,0 +1,12 @@
+{
+  "name": "gymbud_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "nodemon -i app.js",
+    "start": "node app.js"
+  },
+  "author": "Adam O' Ceallaigh",
+  "license": "ISC"
+}
