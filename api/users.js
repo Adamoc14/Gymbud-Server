@@ -56,7 +56,7 @@ userRouter.delete('/:id', async (req, res) => {
     const { id } = req.params
     await user.findByIdAndRemove(id)
     res.send({
-        message: "Deleted the product"
+        message: "Deleted the user"
     })
 })
 
