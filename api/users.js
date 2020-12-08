@@ -33,5 +33,32 @@ userRouter.post("/", async (req, res) => {
     return res.send(createdUser)
 })
 
+// ____Getting_User_By_Id_____
+userRouter.get('/:id', async (req, res) => {
+    const { id } = req.params,
+        singleUser = await user.find({ _id: id })
+    res.send(singleUser)
+})
+
+// // ____Updating_User_By_Id_____
+userRouter.put('/:id', async (req, res) => {
+    const { id } = req.params,
+        { userName, password, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  } = req.body,
+        newUser = { userName, password, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  }
+    await user.findByIdAndUpdate(id, newUser, { new: true }, (err, updatedUser) => {
+        if (err) console.log(err)
+        res.send(updatedUser)
+    })
+})
+
+// ____Deleting_User_By_Id_____
+userRouter.delete('/:id', async (req, res) => {
+    const { id } = req.params
+    await user.findByIdAndRemove(id)
+    res.send({
+        message: "Deleted the product"
+    })
+})
+
 export { userRouter }
 
