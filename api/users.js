@@ -16,7 +16,6 @@ userRouter.get("/", async (req, res) => {
 
 // ____Creating_A_New_User_____
 userRouter.post("/", async (req, res) => {
-    debugger
     const { userName, password, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body
     const userData = { 
         userName: userName,
