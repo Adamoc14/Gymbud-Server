@@ -16,10 +16,11 @@ userRouter.get("/", async (req, res) => {
 
 // ____Creating_A_New_User_____
 userRouter.post("/", async (req, res) => {
-    const { userName, password, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body
+    const { userName, password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body
     const userData = { 
         userName: userName,
         password: password,
+        Profile_Url: Profile_Url,
         Name: Name,
         Gender: Gender,
         DOB: DOB,
@@ -43,8 +44,8 @@ userRouter.get('/:id', async (req, res) => {
 // // ____Updating_User_By_Id_____
 userRouter.put('/:id', async (req, res) => {
     const { id } = req.params,
-        { userName, password, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  } = req.body,
-        newUser = { userName, password, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  }
+        { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  } = req.body,
+        newUser = { userName, password, Name, Profile_Url,Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  }
     await user.findByIdAndUpdate(id, newUser, { new: true }, (err, updatedUser) => {
         if (err) console.log(err)
         res.send(updatedUser)

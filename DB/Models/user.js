@@ -3,6 +3,7 @@ import { mongoose } from '../connection.js';
 const userSchema = new mongoose.Schema({
     userName: String,
     password: String,
+    Profile_Url : String,
     Name: String,
     Gender: String,
     DOB: String,
