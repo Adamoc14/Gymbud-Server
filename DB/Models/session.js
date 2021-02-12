@@ -1,6 +1,8 @@
 // Setting up the Session Schema
 import { mongoose } from '../connection.js';
 import { Joi } from "../../Helpers_and_Imports/libs_required.js";
+
+// Declaring our Schemas for Validation but also for use of the mongoose Models
 const sessionSchema = new mongoose.Schema({
     Creator: {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +25,7 @@ const sessionSchema = new mongoose.Schema({
         ref: "User"
     }]
 }),
+
 //Joi Documentation for Schemas - https://joi.dev/api/?v=17.4.0
 sessionValidationSchema = Joi.object().keys({
     Creator: Joi.string().trim().required(),
@@ -40,6 +43,7 @@ sessionValidationSchema = Joi.object().keys({
     Resources: Joi.array().items(Joi.string()),
     Capacity: Joi.array().items(Joi.string())
 }),
+
 session = mongoose.model("Session", sessionSchema)
 
 export { session  , sessionValidationSchema }

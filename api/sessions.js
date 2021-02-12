@@ -11,6 +11,10 @@ const options = {
     stripUnknown: true // remove unknown props
 };
 
+// Declaring array to carry my errors 
+const errors = [];
+
+
 //Router is mounted at /api/v1/sessions , all routes after this will be prefixed with this
 
 // Setting up the sessionRouter's routes
@@ -24,7 +28,6 @@ sessionRouter.get("/", async(req,res) => {
 
 //____Creating_A_Session___________
 sessionRouter.post("/" , async(req,res) => {
-    const errors = [];
     try {
         const { error } = await sessionValidationSchema.validate(req.body, options);
         if( error) errors.push(error) && sendError(res , errors);
