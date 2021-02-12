@@ -1,12 +1,17 @@
 // Variable Declarations and Imports
 import { express } from './Helpers_and_Imports/libs_required.js'
 import { userRouter } from './api/users.js'
+import { sessionRouter } from './api/sessions.js'
 const app = express(),
 port = process.env.PORT || 7000
 
 
-// Middlewares
+// Middlewares 
+
+// These allow me to parse application/JSON data or form-encoded(HTML form POST) data on my server to retrieve req.body values
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json())
+
 
 // Routes
 app.get("/", (req,res) => {
@@ -15,7 +20,9 @@ app.get("/", (req,res) => {
     });
 })
 
+// Mounting the Routers at these URLS
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/sessions" , sessionRouter)
 
 // App Listener 
 app.listen(port , () => {

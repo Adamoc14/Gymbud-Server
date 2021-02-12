@@ -1,6 +1,6 @@
 // Imports and variable Declarations
 import express from 'express'
 import mongoose from 'mongoose'
-import cors from 'cors'
+import Joi from 'joi'
 
-export { express , mongoose }
+export { express , mongoose  , Joi}
