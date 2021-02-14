@@ -1,6 +1,7 @@
 // Variable Declarations and Imports
-import { express } from "../Helpers_and_Imports/libs_required.js"
-import { user , userValidationSchema} from '../DB/Models/user.js'
+import { express, bcrypt } from "../Helpers_and_Imports/libs_required.js"
+import { user, userValidationSchema } from '../DB/Models/user.js'
+import passport from "passport";
 const userRouter = express.Router()
 
 // Joi schema options
@@ -9,9 +10,6 @@ const options = {
     allowUnknown: true, // ignore unknown props
     stripUnknown: true // remove unknown props
 };
-
-// Declaring array to carry my errors 
-const errors = [];
 
 // Router is mounted at /api/v1/users , all routes after this will be prefixed with this
 
@@ -26,16 +24,55 @@ userRouter.get("/", async (req, res) => {
 
 // ____Creating_A_New_User_____
 userRouter.post("/", async (req, res) => {
+    // Declaring array to carry my errors 
+    let errors = [];
     try {
-        const { error } = await userValidationSchema.validate(req.body, options);
-        if( error) errors.push(error) && sendError(res , errors);
-        else {
-            const { userName, password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body
-            let createdUser = await session.create({userName, password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person})
-            res.send(createdUser)
+        const { error } = userValidationSchema.validate(req.body, options);
+        const { Username } = req.body;
+        let { Password } = req.body;
+        const userFound = await user.findOne({ Username: Username });
+        if (userFound) {
+            errors.push("Username is already registered")
+            sendError(res, errors);
+            return
         }
-    } catch (error) {
-        sendError(res , errorMsg);
+        if (error) errors.push(error) && sendError(res, errors);
+        else {
+            const { Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Video_Or_In_Person, Resources, Activities_Enjoyed } = req.body
+            try {
+                // BcryptJS - https://www.youtube.com/watch?v=-RCnNyD0L-s&ab_channel=WebDevSimplified
+                const hashedPass = await bcrypt.hash(Password, 10);
+                Password = hashedPass;
+                let createdUser = await user.create({ Username, Password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Video_Or_In_Person, Resources, Activities_Enjoyed })
+                sendSuccess(res, "You are now registered and can log in", createdUser, "login");
+            } catch (errorMsg) {
+                sendError(res, errorMsg, "Session_Details");
+            }
+        }
+    } catch (errorMsg) {
+        sendError(res, errorMsg);
+    }
+})
+
+userRouter.post("/login", async (req, res, next) => {
+    try {
+        // Declaring array to carry my errors 
+        let errors = [];
+        passport.authenticate("local", (err, userNormal, info) => {
+            if (err) errors.push(err) && sendError(res, errors);
+            if (info.message) errors.push(info.message) && sendError(res, errors);
+            if (!userNormal) {
+                errors.push("No User exists with these credentials");
+                sendError(res, errors);
+                return
+            }
+            req.logIn(userNormal, err => {
+                if (err) return sendError(res, err);
+                sendSuccess(res, "You are now successfully logged in", req.user, "Home");
+            });
+        })(req, res, next)
+    } catch (errorMsg) {
+        sendError(res, errorMsg);
     }
 })
 
@@ -51,8 +88,8 @@ userRouter.get('/:id', async (req, res) => {
 // // ____Updating_User_By_Id_____
 userRouter.put('/:id', async (req, res) => {
     const { id } = req.params,
-        { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  } = req.body,
-        newUser = { userName, password, Name, Profile_Url,Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person  }
+        { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body,
+        newUser = { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person }
     await user.findByIdAndUpdate(id, newUser, { new: true }, (err, updatedUser) => {
         if (err) console.log(err)
         res.send(updatedUser)
@@ -68,14 +105,25 @@ userRouter.delete('/:id', async (req, res) => {
     })
 })
 
-// General Helper Method to send Error message back to Client when Error occurs
-const sendError = (res , errorMsg) => {
+// General Helper Method to send Error message back to Client when Error occurs and redirect
+const sendError = (res, errorMsg, redirectUrl) => {
     res.send({
         message: "An error has occurred",
         cause: errorMsg,
-        status: errorMsg.status
+        status: errorMsg.status,
+        redirectUrl: redirectUrl != null || redirectUrl != undefined ? redirectUrl : ""
     });
 }
+
+// General Helper Method to send Success message back to Client when Error occurs and redirect
+const sendSuccess = (res, successMsg, createdUser, redirectUrl) => {
+    res.send({
+        success_msg: successMsg,
+        user: createdUser,
+        redirectUrl: redirectUrl != null || redirectUrl != undefined ? redirectUrl : ""
+    })
+}
+
 
 export { userRouter }
 
