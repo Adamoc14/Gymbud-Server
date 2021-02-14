@@ -60,7 +60,7 @@ userRouter.post("/login", async (req, res, next) => {
         let errors = [];
         passport.authenticate("local", (err, userNormal, info) => {
             if (err) errors.push(err) && sendError(res, errors);
-            if (info.message) errors.push(info.message) && sendError(res, errors);
+            if (info != undefined && info.message) errors.push(info.message) && sendError(res, errors);
             if (!userNormal) {
                 errors.push("No User exists with these credentials");
                 sendError(res, errors);

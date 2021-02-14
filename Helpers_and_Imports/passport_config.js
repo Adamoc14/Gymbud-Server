@@ -22,13 +22,15 @@ const instantiate = async passport => {
                 if(!userFound) return done(null , false , {message: "No user found with that username"})
                 try {
                     const userMatch = await bcrypt.compare(password , userFound.Password)
-                    if (userMatch) return done(null , userFound)
-                    else return done(null , false , {message: "Wrong Password"})
+                    if (userMatch) 
+                        return done(null , userFound)
+                    else 
+                        return done(null , false , {message: "Wrong Password"})
                 } catch (error) {
-                    return done(null , false , {message: "Wrong Password"})
+                    return  error;
                 }
             } catch (error) {
-                
+                return  error;
             }
         })
     )
