@@ -1,6 +1,8 @@
 // Setting up my User Schema
 import { mongoose } from '../connection.js';
+import { Joi } from "../../Helpers_and_Imports/libs_required.js";
 
+// Declaring our Schemas for Validation but also for use of the mongoose Models
 const userSchema = new mongoose.Schema({
     Username: String,
     Password: String,
@@ -29,6 +31,26 @@ const userSchema = new mongoose.Schema({
     }]
 }),
 
+//Joi Documentation for Schemas - https://joi.dev/api/?v=17.4.0
+userValidationSchema = Joi.object().keys({
+    Username: Joi.string().trim().required(),
+    Password: Joi.string().trim().required(),
+    Profile_Url: Joi.string().trim().required(),
+    Name: Joi.string().trim().required(),
+    Gender: Joi.string().trim().required(),
+    DOB: Joi.string().trim().required(),
+    Preferred_Intensity: Joi.string().trim().required(),
+    Fitness_Level: Joi.string().trim().required(),
+    Preferred_Age_Range: Joi.string().trim().required(),
+    Preferred_Distance_Range: Joi.string().trim().required(),
+    Video_Or_In_Person: Joi.string().trim().required(),
+    Resources: Joi.array().items(Joi.string()).required(),
+    Messages: Joi.array().items(Joi.string()),
+    Buds: Joi.array().items(Joi.string()),
+    Sessions: Joi.array().items(Joi.string()),
+    Activities_Enjoyed: Joi.array().items(Joi.string()).required()
+}),
+
 user = mongoose.model("User", userSchema)
 
-export { user }
+export { user , userValidationSchema }
