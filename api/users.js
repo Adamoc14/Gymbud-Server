@@ -1,7 +1,17 @@
 // Variable Declarations and Imports
 import { express } from "../Helpers_and_Imports/libs_required.js"
-import { user } from '../DB/Models/user.js'
+import { user , userValidationSchema} from '../DB/Models/user.js'
 const userRouter = express.Router()
+
+// Joi schema options
+const options = {
+    abortEarly: false, // include all errors
+    allowUnknown: true, // ignore unknown props
+    stripUnknown: true // remove unknown props
+};
+
+// Declaring array to carry my errors 
+const errors = [];
 
 // Router is mounted at /api/v1/users , all routes after this will be prefixed with this
 
@@ -16,22 +26,17 @@ userRouter.get("/", async (req, res) => {
 
 // ____Creating_A_New_User_____
 userRouter.post("/", async (req, res) => {
-    const { userName, password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body
-    const userData = { 
-        userName: userName,
-        password: password,
-        Profile_Url: Profile_Url,
-        Name: Name,
-        Gender: Gender,
-        DOB: DOB,
-        Preferred_Intensity: Preferred_Intensity,
-        Fitness_Level: Fitness_Level,
-        Resources: Resources,
-        Preferred_Age_Range: Preferred_Age_Range,
-        Video_Or_In_Person: Video_Or_In_Person
+    try {
+        const { error } = await userValidationSchema.validate(req.body, options);
+        if( error) errors.push(error) && sendError(res , errors);
+        else {
+            const { userName, password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body
+            let createdUser = await session.create({userName, password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person})
+            res.send(createdUser)
+        }
+    } catch (error) {
+        sendError(res , errorMsg);
     }
-    let createdUser = await user.create(userData)
-    return res.send(createdUser)
 })
 
 
@@ -62,6 +67,15 @@ userRouter.delete('/:id', async (req, res) => {
         message: "Deleted the user"
     })
 })
+
+// General Helper Method to send Error message back to Client when Error occurs
+const sendError = (res , errorMsg) => {
+    res.send({
+        message: "An error has occurred",
+        cause: errorMsg,
+        status: errorMsg.status
+    });
+}
 
 export { userRouter }
 
