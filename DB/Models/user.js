@@ -12,11 +12,11 @@ const userSchema = new mongoose.Schema({
     DOB: String,
     Preferred_Intensity: String,
     Fitness_Level: String,
-    Resources: [String],
-    Activities_Enjoyed: [String],
     Preferred_Age_Range: String,
     Preferred_Distance_Range: String,
     Video_Or_In_Person: String,
+    Resources: [String],
+    Activities_Enjoyed: [String],
     Messages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
@@ -45,10 +45,10 @@ userValidationSchema = Joi.object().keys({
     Preferred_Distance_Range: Joi.string().trim().required(),
     Video_Or_In_Person: Joi.string().trim().required(),
     Resources: Joi.array().items(Joi.string()).required(),
+    Activities_Enjoyed: Joi.array().items(Joi.string()).required(),
     Messages: Joi.array().items(Joi.string()),
     Buds: Joi.array().items(Joi.string()),
-    Sessions: Joi.array().items(Joi.string()),
-    Activities_Enjoyed: Joi.array().items(Joi.string()).required()
+    Sessions: Joi.array().items(Joi.string())
 }),
 
 user = mongoose.model("User", userSchema)
