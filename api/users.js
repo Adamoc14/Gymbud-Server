@@ -34,6 +34,8 @@ userRouter.post("/", async (req, res) => {
     return res.send(createdUser)
 })
 
+
+
 // ____Getting_User_By_Id_____
 userRouter.get('/:id', async (req, res) => {
     const { id } = req.params,

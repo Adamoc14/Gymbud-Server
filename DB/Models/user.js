@@ -1,5 +1,6 @@
 // Setting up my User Schema
 import { mongoose } from '../connection.js';
+
 const userSchema = new mongoose.Schema({
     Username: String,
     Password: String,
@@ -27,5 +28,7 @@ const userSchema = new mongoose.Schema({
         ref: "Session"
     }]
 }),
+
 user = mongoose.model("User", userSchema)
+
 export { user }
