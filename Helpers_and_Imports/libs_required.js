@@ -7,5 +7,6 @@ import passport from 'passport'
 import passportLocal from 'passport-local'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
-export { express , mongoose  , Joi, bcrypt , passport , passportLocal , session , cookieParser}
+export { express , mongoose  , Joi, bcrypt , passport , passportLocal , session , cookieParser , cors}

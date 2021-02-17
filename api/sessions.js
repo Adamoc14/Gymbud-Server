@@ -22,8 +22,12 @@ const errors = [];
 
 //_____Getting_All_Sessions________
 sessionRouter.get("/", async(req,res) => {
-    const sessions = await session.find()
-    res.send(sessions)
+    try {
+        const sessions = await session.find({}).populate("Capacity").populate("Creator");
+        res.send(sessions)
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 //____Creating_A_Session___________
@@ -44,6 +48,32 @@ sessionRouter.post("/" , async(req,res) => {
     }
 })
 
+sessionRouter.post("/addUser", async(req, res) => {
+    try {
+        let errors = [];
+        const {sessionId, userId} = req.query;
+        if(!sessionId) errors.push("No Session was provided") && sendError(res, errors)
+        else {
+            const sessionFound = await session.findById(sessionId);
+            const userFound = await user.findById(userId);
+            if(!userFound && !userFound.Capacity) errors.push("No user was found with these credentials") && sendError(res,errors)
+            if(!sessionFound && !sessionFound.Capacity ) errors.push("No Session was found with these credentials") && sendError(res, errors)
+            else {
+                debugger
+                // sessionFound.Capacity.push(req.user._id);
+                userFound.Sessions.push(sessionId);
+                sessionFound.Capacity.push(userId);
+                await userFound.save()
+                await sessionFound.save();
+                sendSuccess(res, "You have successfully signed up for this session");
+            }
+        } 
+        
+    } catch (errorMsg) {
+        sendError(res , errorMsg);
+    }
+})
+
 
 // General Helper Method to send Error message back to Client when Error occurs
 const sendError = (res , errorMsg) => {
@@ -53,5 +83,15 @@ const sendError = (res , errorMsg) => {
         status: errorMsg.status
     });
 }
+
+// General Helper Method to send Success message back to Client when Error occurs and redirect
+const sendSuccess = (res, successMsg, createdUser, redirectUrl) => {
+    res.send({
+        success_msg: successMsg,
+        user: createdUser,
+        redirectUrl: redirectUrl != null || redirectUrl != undefined ? redirectUrl : ""
+    })
+}
+
 
 export { sessionRouter }
