@@ -16,11 +16,12 @@ const sessionSchema = new mongoose.Schema({
     Activity_Name: String,
     Activity_Description: String,
     Activity_Gender_Preference: String,
-    Video_Or_In_Person: String,
     Intensity_Level: String,
+    Fitness_Level: String,
+    Budget_Level: String,
     Activity_Image_Url: String,
     Resources: [String],
-    Capacity: [{
+    Participants: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }]
@@ -37,11 +38,12 @@ sessionValidationSchema = Joi.object().keys({
     Activity_Name: Joi.string().trim().required(),
     Activity_Description: Joi.string().trim().required(),
     Activity_Gender_Preference: Joi.string().trim().required(),
-    Video_Or_In_Person: Joi.string().trim().required(),
     Intensity_Level: Joi.string().trim().required(),
+    Fitness_Level: Joi.string().trim().required(),
+    Budget_Level: Joi.string().trim().required(),
     Activity_Image_Url: Joi.string().trim().required(),
     Resources: Joi.array().items(Joi.string()),
-    Capacity: Joi.array().items(Joi.string())
+    Participants: Joi.array().items(Joi.string())
 }),
 
 session = mongoose.model("Session", sessionSchema)
