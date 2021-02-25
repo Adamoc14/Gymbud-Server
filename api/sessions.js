@@ -36,9 +36,9 @@ sessionRouter.post("/" , async(req,res) => {
         const { error } = await sessionValidationSchema.validate(req.body, options);
         if( error) errors.push(error) && sendError(res , errors);
         else {
-            const { Creator , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Video_Or_In_Person , Intensity_Level, Activity_Image_Url, Resources, Capacity } = req.body;
-            let createdSession = await session.create({Creator , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Video_Or_In_Person , Intensity_Level, Activity_Image_Url, Resources, Capacity})
-            let userFound = await user.findById(createdSession.Creator)
+            const { Creator: {_id: CreatorId} , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants } = req.body;
+            let createdSession = await session.create({CreatorId , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants})
+            let userFound = await user.findById(createdSession.Creator._id)
             userFound.Sessions.push(createdSession._id)
             userFound.save()
             res.send(createdSession)
