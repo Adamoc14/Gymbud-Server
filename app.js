@@ -3,6 +3,8 @@ import { express , session , cookieParser , passport , cors } from './Helpers_an
 import { userRouter } from './api/users.js'
 import { sessionRouter } from './api/sessions.js'
 import passportInitialize from './Helpers_and_Imports/passport_config.js'
+import {upload, cloudinaryConfig} from './Helpers_and_Imports/cloudinary.js'
+import middlewares from './middleware/index.js'
 const app = express(),
 port = process.env.PORT || 7000
 
@@ -44,9 +46,19 @@ app.get("/", (req,res) => {
     });
 })
 
+app.post("/image/upload", upload.single('uploadingImage') , async(req,res) =>{
+    if (!req.file) return res.send("Please upload a file");
+    console.log(req.file, req.body);
+    debugger
+    let result = await cloudinaryConfig.upload(file.path);
+    // res.send(result);
+    debugger
+    res.json(req.file);
+});
 // Mounting the Routers at these URLS
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/sessions" , sessionRouter)
+
 
 // App Listener 
 app.listen(port , () => {

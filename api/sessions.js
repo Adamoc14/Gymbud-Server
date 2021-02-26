@@ -23,7 +23,7 @@ const errors = [];
 //_____Getting_All_Sessions________
 sessionRouter.get("/", async(req,res) => {
     try {
-        const sessions = await session.find({}).populate("Capacity").populate("Creator");
+        const sessions = await session.find({}).populate("Participants").populate("Creator");
         res.send(sessions)
     } catch (error) {
         console.log(error)
@@ -36,8 +36,8 @@ sessionRouter.post("/" , async(req,res) => {
         const { error } = await sessionValidationSchema.validate(req.body, options);
         if( error) errors.push(error) && sendError(res , errors);
         else {
-            const { Creator: {_id: CreatorId} , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants } = req.body;
-            let createdSession = await session.create({CreatorId , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants})
+            const { Creator: {_id: Creator} , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants } = req.body;
+            let createdSession = await session.create({Creator , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants})
             let userFound = await user.findById(createdSession.Creator._id)
             userFound.Sessions.push(createdSession._id)
             userFound.save()

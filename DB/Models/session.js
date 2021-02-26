@@ -29,7 +29,7 @@ const sessionSchema = new mongoose.Schema({
 
 //Joi Documentation for Schemas - https://joi.dev/api/?v=17.4.0
 sessionValidationSchema = Joi.object().keys({
-    Creator: Joi.string().trim().required(),
+    Creator: Joi.object().required(),
     Time: Joi.string().trim().required(),
     Date: Joi.string().trim().required(),
     Location: Joi.string().trim().required(),
@@ -43,7 +43,7 @@ sessionValidationSchema = Joi.object().keys({
     Budget_Level: Joi.string().trim().required(),
     Activity_Image_Url: Joi.string().trim().required(),
     Resources: Joi.array().items(Joi.string()),
-    Participants: Joi.array().items(Joi.string())
+    Participants: Joi.array().items(Joi.object())
 }),
 
 session = mongoose.model("Session", sessionSchema)

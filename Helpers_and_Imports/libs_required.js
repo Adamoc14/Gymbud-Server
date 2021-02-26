@@ -8,5 +8,12 @@ import passportLocal from 'passport-local'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import cloudinary from 'cloudinary'
+import dotenv from 'dotenv'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
+import multer from 'multer'
+import crypto from 'crypto'
 
-export { express , mongoose  , Joi, bcrypt , passport , passportLocal , session , cookieParser , cors}
+if(process.env.NODE_ENV !== 'production') dotenv.config();
+
+export { express , mongoose  , Joi, bcrypt , passport , passportLocal , session , cookieParser , cors , cloudinary, crypto, CloudinaryStorage, multer}
