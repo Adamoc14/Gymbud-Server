@@ -46,11 +46,11 @@ app.get("/", (req,res) => {
     });
 })
 
-app.post("/image/upload", upload.single('uploadingImage') , async(req,res) =>{
+app.post("/image/upload", upload.single('uploadingImage') , (req,res) =>{
     if (!req.file) return res.send("Please upload a file");
     console.log(req.file, req.body);
     debugger
-    let result = await cloudinaryConfig.upload(file.path);
+    // let result = await cloudinaryConfig.upload(file.path);
     // res.send(result);
     debugger
     res.json(req.file);

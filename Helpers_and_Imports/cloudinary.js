@@ -8,20 +8,29 @@ const cloudinaryConfig = cloudinary.v2.config({
 
 const cloudStorage = new CloudinaryStorage({
     cloudinary,
-    params: async (req, file) => {
-        let buf = crypto.randomBytes(16);
-        buf = buf.toString('hex');
-        let uniqFileName = file.originalname.replace(/\.jpeg|\.jpg|\.png/ig, '');
-        uniqFileName += buf;
-        return {
-            format: async (req, file) => {
-                "jpg", "png";
-            }, 
-            public_id: ( req , file )=> {
-                return uniqFileName
-            }
-        };
+    params: {
+        folder: (req, file) => 'folder_name',
+        format: async (req, file) => {
+          // async code using `req` and `file`
+          // ...
+          return 'jpeg';
+        },
+        public_id: (req, file) => 'some_unique_id',
       },
+    // params: async (req, file) => {
+    //     let buf = crypto.randomBytes(16);
+    //     buf = buf.toString('hex');
+    //     let uniqFileName = file.originalname.replace(/\.jpeg|\.jpg|\.png/ig, '');
+    //     uniqFileName += buf;
+    //     return {
+    //         format: async (req, file) => {
+    //             "jpg", "png";
+    //         }, 
+    //         public_id: ( req , file )=> {
+    //             return uniqFileName
+    //         }
+    //     };
+    //   },
 });
 
 const upload = multer({ storage: cloudStorage });
