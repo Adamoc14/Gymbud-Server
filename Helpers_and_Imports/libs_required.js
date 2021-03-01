@@ -14,6 +14,8 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary'
 import multer from 'multer'
 import crypto from 'crypto'
 
+// Checking if local or production mode for use of dotenv
 if(process.env.NODE_ENV !== 'production') dotenv.config();
 
+// Exporting everything
 export { express , mongoose  , Joi, bcrypt , passport , passportLocal , session , cookieParser , cors , cloudinary, crypto, CloudinaryStorage, multer}

@@ -1,31 +1,34 @@
+// Imports and Variables 
 import {cloudinary, CloudinaryStorage, crypto, multer} from './libs_required.js';
 
+// Config options for cloudinary 
 const cloudinaryConfig = cloudinary.v2.config({
     cloud_name: 'aoc1153225218919518',
     api_key: '639167278639364',
     api_secret: process.env.CLOUDINARY_SECRET
 });
 
+// Setting Up my storage object
 const cloudStorage = new CloudinaryStorage({
     cloudinary,
-    params: async (req, file) => {
-        let buf = crypto.randomBytes(16);
-        buf = buf.toString('hex');
-        let uniqFileName = file.originalname.replace(/\.jpeg|\.jpg|\.png/ig, '');
-        uniqFileName += buf;
-        return {
-            format: async (req, file) => {
-                "jpg", "png";
-            }, 
-            public_id: ( req , file )=> {
-                return uniqFileName
-            }
-        };
-      },
+    params: {
+        folder: 'Gymbud_Uploads',
+        format: async (req, file) => 'png',
+        public_id: (req, file) => {
+            let buf = crypto.randomBytes(16);
+            buf = buf.toString('hex');
+            let uniqFileName = file.originalname.replace(/\.jpeg|\.jpg|\.png/ig, '');
+            uniqFileName += buf;
+
+            return uniqFileName
+        },
+    },
 });
 
+// Using Multer to set up my storage place for objects to go
 const upload = multer({ storage: cloudStorage });
 
+// Exporting config and storage place 
 export  {cloudinaryConfig, upload}
 
 
