@@ -56,13 +56,13 @@ sessionRouter.post("/addUser", async(req, res) => {
         else {
             const sessionFound = await session.findById(sessionId);
             const userFound = await user.findById(userId);
-            if(!userFound && !userFound.Capacity) errors.push("No user was found with these credentials") && sendError(res,errors)
-            if(!sessionFound && !sessionFound.Capacity ) errors.push("No Session was found with these credentials") && sendError(res, errors)
+            if(!userFound && !userFound.Participants) errors.push("No user was found with these credentials") && sendError(res,errors)
+            if(!sessionFound && !sessionFound.Participants ) errors.push("No Session was found with these credentials") && sendError(res, errors)
             else {
                 debugger
                 // sessionFound.Capacity.push(req.user._id);
                 userFound.Sessions.push(sessionId);
-                sessionFound.Capacity.push(userId);
+                sessionFound.Participants.push(userId);
                 await userFound.save()
                 await sessionFound.save();
                 sendSuccess(res, "You have successfully signed up for this session");
