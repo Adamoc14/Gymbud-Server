@@ -38,12 +38,12 @@ userRouter.post("/", async (req, res) => {
         }
         if (error) errors.push(error) && sendError(res, errors);
         else {
-            const { Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Video_Or_In_Person, Resources, Activities_Enjoyed } = req.body
+            const { Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed } = req.body
             try {
                 // BcryptJS - https://www.youtube.com/watch?v=-RCnNyD0L-s&ab_channel=WebDevSimplified
                 const hashedPass = await bcrypt.hash(Password, 10);
                 Password = hashedPass;
-                let createdUser = await user.create({ Username, Password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Video_Or_In_Person, Resources, Activities_Enjoyed })
+                let createdUser = await user.create({ Username, Password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed })
                 sendSuccess(res, "You are now registered and can log in", createdUser, "login");
             } catch (errorMsg) {
                 sendError(res, errorMsg, "Session_Details");
@@ -91,8 +91,8 @@ userRouter.get('/:id', async (req, res) => {
 // // ____Updating_User_By_Id_____
 userRouter.put('/:id', async (req, res) => {
     const { id } = req.params,
-        { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person } = req.body,
-        newUser = { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range, Video_Or_In_Person }
+        { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range } = req.body,
+        newUser = { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range }
     await user.findByIdAndUpdate(id, newUser, { new: true }, (err, updatedUser) => {
         if (err) console.log(err)
         res.send(updatedUser)

@@ -1,31 +1,23 @@
-// Setting up the Message Schema
-import mongoose from '../connection.js';
-import { Joi } from "../../Helpers_and_Imports/libs_required.js";
+import { mongoose } from "../connection.js";
+import { Joi } from '../../Helpers_and_Imports/libs_required.js'
 
-// Declaring our Schemas for Validation but also for use of the mongoose Models
-const messageSchema = new mongoose.Schema({
-    Date: String,
-    Time: String,
+const messageSchema = mongoose.Schema({
     Content: String,
-    Sender: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
-    Reciever: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
-}),
+    sender: {
+        senderName: String,
+        senderId: String,
+    },
+}, { timestamps: true }),
 
-//Joi Documentation for Schemas - https://joi.dev/api/?v=17.4.0
+  // JOI documentation for error handling for schemas - https://www.youtube.com/watch?v=PwUoiTt2oKM&ab_channel=NoobCoder&fbclid=IwAR1FlAFIDWyItHSy9aSgFyGrWd9zGXgjQuL3wby1WWR27guh5okMXxERPxM
 messageValidationSchema = Joi.object().keys({
-    Sender: Joi.string().trim().required(),
-    Time: Joi.string().trim().required(),
-    Date: Joi.string().trim().required(),
     Content: Joi.string().trim().required(),
-    Reciever: Joi.string().trim().required(),
-}),
+    sender: Joi.object().keys({
+        senderName: Joi.string().trim().required(),
+        senderId: Joi.string().trim().required(),
+    })
+});
 
-message = mongoose.model("Message", messageSchema)
+const Message = mongoose.model("Message", messageSchema);
 
-export { message , messageValidationSchema }
+export { Message, messageValidationSchema };
