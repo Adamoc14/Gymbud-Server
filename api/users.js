@@ -11,7 +11,7 @@ const options = {
     stripUnknown: true // remove unknown props
 };
 
-// Router is mounted at /api/v1/users , all routes after this will be prefixed with this
+// Router is mounted at /users , all routes after this will be prefixed with this
 
 
 // Setting up userRouter's Routes
@@ -38,15 +38,15 @@ userRouter.post("/", async (req, res) => {
         }
         if (error) errors.push(error) && sendError(res, errors);
         else {
-            const { Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed } = req.body
+            const { Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed } = req.body
             try {
                 // BcryptJS - https://www.youtube.com/watch?v=-RCnNyD0L-s&ab_channel=WebDevSimplified
                 const hashedPass = await bcrypt.hash(Password, 10);
                 Password = hashedPass;
-                let createdUser = await user.create({ Username, Password, Profile_Url, Name, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed })
+                let createdUser = await user.create({ Username, Password, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed })
                 sendSuccess(res, "You are now registered and can log in", createdUser, "login");
             } catch (errorMsg) {
-                sendError(res, errorMsg, "Session_Details");
+                sendError(res, errorMsg, "Activity_Details");
             }
         }
     } catch (errorMsg) {
@@ -91,8 +91,8 @@ userRouter.get('/:id', async (req, res) => {
 // // ____Updating_User_By_Id_____
 userRouter.put('/:id', async (req, res) => {
     const { id } = req.params,
-        { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range } = req.body,
-        newUser = { userName, password, Name, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range }
+        { userName, password, Name, Email, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range } = req.body,
+        newUser = { userName, password, Name, Email, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range }
     await user.findByIdAndUpdate(id, newUser, { new: true }, (err, updatedUser) => {
         if (err) console.log(err)
         res.send(updatedUser)

@@ -1,9 +1,9 @@
-// Setting up the Session Schema
+// Setting up the Activity Schema
 import { mongoose } from '../connection.js';
 import { Joi } from "../../Helpers_and_Imports/libs_required.js";
 
 // Declaring our Schemas for Validation but also for use of the mongoose Models
-const sessionSchema = new mongoose.Schema({
+const activitySchema = new mongoose.Schema({
     Creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
@@ -28,7 +28,7 @@ const sessionSchema = new mongoose.Schema({
 }),
 
 //Joi Documentation for Schemas - https://joi.dev/api/?v=17.4.0
-sessionValidationSchema = Joi.object().keys({
+activityValidationSchema = Joi.object().keys({
     Creator: Joi.object().required(),
     Time: Joi.string().trim().required(),
     Date: Joi.string().trim().required(),
@@ -46,6 +46,6 @@ sessionValidationSchema = Joi.object().keys({
     Participants: Joi.array().items(Joi.object())
 }),
 
-session = mongoose.model("Session", sessionSchema)
+activity = mongoose.model("Activity", activitySchema)
 
-export { session  , sessionValidationSchema }
+export { activity  , activityValidationSchema }

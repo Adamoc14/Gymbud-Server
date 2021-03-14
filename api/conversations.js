@@ -13,7 +13,7 @@ const options = {
 };
 
 
-// conversationRouter is mounted at http://localhost:8080/conversations, anything after this is prefixed with this
+// conversationRouter is mounted at /conversations, anything after this is prefixed with this
 
 // Getting all conversations
 conversationRouter.get("/", async (req, res) => {

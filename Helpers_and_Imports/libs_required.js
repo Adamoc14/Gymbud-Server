@@ -5,7 +5,7 @@ import Joi from 'joi'
 import bcrypt from 'bcryptjs'
 import passport from 'passport'
 import passportLocal from 'passport-local'
-import session from 'express-session'
+import activity from 'express-session'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import cloudinary from 'cloudinary'
@@ -19,4 +19,4 @@ import Pusher from 'pusher'
 if(process.env.NODE_ENV !== 'production') dotenv.config();
 
 // Exporting everything
-export { express , mongoose  , Joi, bcrypt , passport , passportLocal , session , cookieParser , cors , cloudinary, crypto, CloudinaryStorage, multer , Pusher}
+export { express , mongoose  , Joi, bcrypt , passport , passportLocal , activity , cookieParser , cors , cloudinary, crypto, CloudinaryStorage, multer , Pusher}

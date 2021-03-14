@@ -1,8 +1,8 @@
 // Variable Declarations and Imports
 import { express } from "../Helpers_and_Imports/libs_required.js"
-import { session , sessionValidationSchema } from '../DB/Models/session.js'
+import { activity , activityValidationSchema } from '../DB/Models/activity.js'
 import { user } from '../DB/Models/user.js'
-const sessionRouter = express.Router()
+const activityRouter = express.Router()
 
 // Joi schema options
 const options = {
@@ -15,57 +15,57 @@ const options = {
 const errors = [];
 
 
-//Router is mounted at /api/v1/sessions , all routes after this will be prefixed with this
+//Router is mounted at /activities , all routes after this will be prefixed with this
 
-// Setting up the sessionRouter's routes
+// Setting up the activityRouter's routes
 
 
-//_____Getting_All_Sessions________
-sessionRouter.get("/", async(req,res) => {
+//_____Getting_All_Activities________
+activityRouter.get("/", async(req,res) => {
     try {
-        const sessions = await session.find({}).populate("Participants").populate("Creator");
-        res.send(sessions)
+        const activities = await activity.find({}).populate("Participants").populate("Creator");
+        res.send(activities)
     } catch (error) {
         console.log(error)
     }
 })
 
-//____Creating_A_Session___________
-sessionRouter.post("/" , async(req,res) => {
+//____Creating_An_Activity___________
+activityRouter.post("/" , async(req,res) => {
     try {
-        const { error } = await sessionValidationSchema.validate(req.body, options);
+        const { error } = activityValidationSchema.validate(req.body, options);
         if( error) errors.push(error) && sendError(res , errors);
         else {
             const { Creator: {_id: Creator} , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants } = req.body;
-            let createdSession = await session.create({Creator , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants})
-            let userFound = await user.findById(createdSession.Creator._id)
-            userFound.Sessions.push(createdSession._id)
+            let createdActivity = await activity.create({Creator , Time , Date , Location , Duration , Activity_Type , Activity_Name , Activity_Description , Activity_Gender_Preference , Budget_Level, Fitness_Level, Intensity_Level, Activity_Image_Url, Resources, Participants})
+            let userFound = await user.findById(createdActivity.Creator._id)
+            userFound.Activities.push(createdActivity._id)
             userFound.save()
-            res.send(createdSession)
+            res.send(createdActivity)
         }
     } catch (errorMsg) {
         sendError(res , errorMsg);
     }
 })
 
-sessionRouter.post("/addUser", async(req, res) => {
+activityRouter.post("/addUser", async(req, res) => {
     try {
         let errors = [];
-        const {sessionId, userId} = req.query;
-        if(!sessionId) errors.push("No Session was provided") && sendError(res, errors)
+        const {activityId, userId} = req.query;
+        if(!activityId) errors.push("No Activity was provided") && sendError(res, errors)
         else {
-            const sessionFound = await session.findById(sessionId);
+            const activityFound = await activity.findById(activityId);
             const userFound = await user.findById(userId);
             if(!userFound && !userFound.Participants) errors.push("No user was found with these credentials") && sendError(res,errors)
-            if(!sessionFound && !sessionFound.Participants ) errors.push("No Session was found with these credentials") && sendError(res, errors)
+            if(!activityFound && !activityFound.Participants ) errors.push("No Activity was found with these credentials") && sendError(res, errors)
             else {
                 debugger
-                // sessionFound.Capacity.push(req.user._id);
-                userFound.Sessions.push(sessionId);
-                sessionFound.Participants.push(userId);
+                // activityFound.Capacity.push(req.user._id);
+                userFound.Activities.push(activityId);
+                activityFound.Participants.push(userId);
                 await userFound.save()
-                await sessionFound.save();
-                sendSuccess(res, "You have successfully signed up for this session");
+                await activityFound.save();
+                sendSuccess(res, "You have successfully signed up for this activity");
             }
         } 
         
@@ -94,4 +94,4 @@ const sendSuccess = (res, successMsg, createdUser, redirectUrl) => {
 }
 
 
-export { sessionRouter }
+export { activityRouter }

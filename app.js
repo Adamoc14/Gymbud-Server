@@ -1,7 +1,7 @@
 // Variable Declarations and Imports
-import { express, session, cookieParser, passport, cors } from './Helpers_and_Imports/libs_required.js'
+import { express, activity, cookieParser, passport, cors } from './Helpers_and_Imports/libs_required.js'
 import { userRouter } from './api/users.js'
-import { sessionRouter } from './api/sessions.js'
+import { activityRouter } from './api/activities.js'
 import { conversationRouter }  from './api/conversations.js'
 import passportInitialize from './Helpers_and_Imports/passport_config.js'
 import { upload } from './Helpers_and_Imports/cloudinary.js'
@@ -24,7 +24,7 @@ app.use(
 // These middlewares are used to set up my login auth system and are taken from this video - https://www.youtube.com/watch?v=IUw_TgRhTBE&ab_channel=NathanielWoodbury
 app.use(cookieParser('secretcode'))
 app.use(
-    session({
+    activity({
         secret: 'secretcode',
         resave: true,
         saveUninitialized: true,
@@ -52,9 +52,9 @@ app.post("/image/upload", upload.single('uploadingImage'), async (req, res) => {
 });
 
 // Mounting the Routers at these URLS
-app.use("/api/v1/users", userRouter)
-app.use("/api/v1/sessions", sessionRouter)
-app.use("/api/v1/conversations", conversationRouter)
+app.use("/users", userRouter)
+app.use("/activities", activityRouter)
+app.use("/conversations", conversationRouter)
 
 
 // App Listener 

@@ -5,6 +5,7 @@ import { Joi } from "../../Helpers_and_Imports/libs_required.js";
 // Declaring our Schemas for Validation but also for use of the mongoose Models
 const userSchema = new mongoose.Schema({
     Username: String,
+    Email: String,
     Password: String,
     Profile_Url : String,
     Name: String,
@@ -24,15 +25,16 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }],
-    Sessions: [{
+    Activities: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Session"
+        ref: "Activity"
     }]
 }),
 
 //Joi Documentation for Schemas - https://joi.dev/api/?v=17.4.0
 userValidationSchema = Joi.object().keys({
     Username: Joi.string().trim().required(),
+    Email: Joi.string().trim().required(),
     Password: Joi.string().trim().required(),
     Profile_Url: Joi.string().trim().required(),
     Name: Joi.string().trim().required(),
@@ -46,7 +48,7 @@ userValidationSchema = Joi.object().keys({
     Outdoor_Activities_Enjoyed: Joi.array().items(Joi.string()),
     Messages: Joi.array().items(Joi.string()),
     Buds: Joi.array().items(Joi.string()),
-    Sessions: Joi.array().items(Joi.string())
+    Activities: Joi.array().items(Joi.string())
 }),
 
 user = mongoose.model("User", userSchema)
