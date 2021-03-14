@@ -4,8 +4,7 @@ import { userRouter } from './api/users.js'
 import { activityRouter } from './api/activities.js'
 import { conversationRouter }  from './api/conversations.js'
 import passportInitialize from './Helpers_and_Imports/passport_config.js'
-// import { upload } from './Helpers_and_Imports/cloudinary.js'
-import { awsUploader } from './Helpers_and_Imports/aws.js'
+import { awsUploader , s3 } from './Helpers_and_Imports/aws.js'
 const app = express(),
     port = process.env.PORT || 7000
 
@@ -48,9 +47,24 @@ app.get("/", (req, res) => {
 })
 
 app.post("/image/upload", awsUploader.single('uploadingImage'), async (req, res) => {
-    if (!req.file) return res.send("Please upload a file");
-    res.json(req.file);
+    if (!req.file) return res.send({errMessage: "Please upload a file"});
+    res.send({imagePath: `${req.file.key}`});
 });
+
+app.get("/image/:key" ,  (req,res) => {
+    try {
+        const { key:imageKey } = req.params
+        const downloadParams = {
+            Key: imageKey,
+            Bucket: process.env.AWS_BUCKET_NAME
+        }
+        const imageReturned = s3.getObject(downloadParams).createReadStream()
+        imageReturned.pipe(res)
+        
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
 
 // Mounting the Routers at these URLS
 app.use("/users", userRouter)

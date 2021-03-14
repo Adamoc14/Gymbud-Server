@@ -21,5 +21,5 @@ const awsUploader  = multer({
 
 
 // Exporting the storage object on s3
-export { awsUploader }
+export { awsUploader, s3 }
 
