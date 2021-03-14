@@ -1,10 +1,11 @@
 // Variable Declarations and Imports
-import { express, activity, cookieParser, passport, cors } from './Helpers_and_Imports/libs_required.js'
+import { express, expressSession, cookieParser, passport, cors } from './Helpers_and_Imports/libs_required.js'
 import { userRouter } from './api/users.js'
 import { activityRouter } from './api/activities.js'
 import { conversationRouter }  from './api/conversations.js'
 import passportInitialize from './Helpers_and_Imports/passport_config.js'
-import { upload } from './Helpers_and_Imports/cloudinary.js'
+// import { upload } from './Helpers_and_Imports/cloudinary.js'
+import { awsUploader } from './Helpers_and_Imports/aws.js'
 const app = express(),
     port = process.env.PORT || 7000
 
@@ -24,7 +25,7 @@ app.use(
 // These middlewares are used to set up my login auth system and are taken from this video - https://www.youtube.com/watch?v=IUw_TgRhTBE&ab_channel=NathanielWoodbury
 app.use(cookieParser('secretcode'))
 app.use(
-    activity({
+    expressSession({
         secret: 'secretcode',
         resave: true,
         saveUninitialized: true,
@@ -46,7 +47,7 @@ app.get("/", (req, res) => {
     });
 })
 
-app.post("/image/upload", upload.single('uploadingImage'), async (req, res) => {
+app.post("/image/upload", awsUploader.single('uploadingImage'), async (req, res) => {
     if (!req.file) return res.send("Please upload a file");
     res.json(req.file);
 });
