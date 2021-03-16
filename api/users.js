@@ -90,13 +90,19 @@ userRouter.get('/:id', async (req, res) => {
 
 // // ____Updating_User_By_Id_____
 userRouter.put('/:id', async (req, res) => {
-    const { id } = req.params,
-        { userName, password, Name, Email, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range } = req.body,
-        newUser = { userName, password, Name, Email, Profile_Url, Gender, DOB, Preferred_Intensity, Fitness_Level, Resources, Preferred_Age_Range }
-    await user.findByIdAndUpdate(id, newUser, { new: true }, (err, updatedUser) => {
-        if (err) console.log(err)
-        res.send(updatedUser)
-    })
+    let { Password } = req.body;
+    const { Username, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed } = req.body
+    try {
+        // BcryptJS - https://www.youtube.com/watch?v=-RCnNyD0L-s&ab_channel=WebDevSimplified
+        const hashedPass = await bcrypt.hash(Password, 10);
+        Password = hashedPass;
+        await user.findByIdAndUpdate(req.params.id, { Username, Password, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed }, { new: true }, (err, updatedUser) => {
+            if (err) console.log(err)
+            sendSuccess(res, "You're details have been updated", updatedUser, "login");
+        })
+    } catch (errorMsg) {
+        sendError(res, errorMsg, "UpdateProfilePage");
+    }
 })
 
 // ____Deleting_User_By_Id_____

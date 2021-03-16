@@ -17,9 +17,9 @@ const userSchema = new mongoose.Schema({
     Preferred_Distance_Range: String,
     Resources: [String],
     Outdoor_Activities_Enjoyed: [String],
-    Messages: [{
+    Conversations: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Conversation"
     }],
     Buds: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -46,7 +46,7 @@ userValidationSchema = Joi.object().keys({
     Preferred_Distance_Range: Joi.string().trim().required(),
     Resources: Joi.array().items(Joi.string()).required(),
     Outdoor_Activities_Enjoyed: Joi.array().items(Joi.string()),
-    Messages: Joi.array().items(Joi.string()),
+    Conversations: Joi.array().items(Joi.string()),
     Buds: Joi.array().items(Joi.string()),
     Activities: Joi.array().items(Joi.string())
 }),
