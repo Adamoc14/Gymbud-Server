@@ -43,7 +43,7 @@ activityValidationSchema = Joi.object().keys({
     Budget_Level: Joi.string().trim().required(),
     Activity_Image_Url: Joi.string().trim().required(),
     Resources: Joi.array().items(Joi.string()),
-    Participants: Joi.array().items(Joi.object())
+    Participants: Joi.array().items()
 }),
 
 activity = mongoose.model("Activity", activitySchema)

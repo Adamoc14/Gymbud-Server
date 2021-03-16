@@ -3,7 +3,7 @@ import { Joi } from '../../Helpers_and_Imports/libs_required.js'
 
 const messageSchema = mongoose.Schema({
     Content: String,
-    sender: {
+    Sender: {
         senderName: String,
         senderId: String,
     },

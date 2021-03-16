@@ -27,11 +27,11 @@ conversationRouter.post('/new_conversation', async(req, res) => {
         const { error } = conversationValidationSchema.validate(req.body, options);
         if (error !== undefined) errors.push(error) && res.send(errors)
         const { Sender, Receiver, Messages } = req.body
-        const senderFound = await User.findById(Sender)
-        const receiverFound = await User.findById(Receiver)
+        const senderFound = await user.findById(Sender)
+        const receiverFound = await user.findById(Receiver)
         let conversationCreated = await Conversation.create({Sender, Receiver, Messages});
-        senderFound.conversations.push(conversationCreated._id)
-        receiverFound.conversations.push(conversationCreated._id)
+        senderFound?.Conversations?.push(conversationCreated._id)
+        receiverFound?.Conversations?.push(conversationCreated._id)
         await senderFound.save()
         await receiverFound.save()
         conversationCreated = await conversationCreated.populate("Sender").populate("Receiver").populate("Messages").execPopulate()
@@ -130,10 +130,10 @@ conversationRouter.get('/get/lastMessage', (req, res) => {
 })
 
 // General Helper Method to send Success message back to Client when Error occurs and redirect
-const sendSuccess = (res, successMsg, createdUser, redirectUrl) => {
+const sendSuccess = (res, successMsg, createduser, redirectUrl) => {
     res.send({
         success_msg: successMsg,
-        user: createdUser,
+        user: createduser,
         redirectUrl: redirectUrl != null || redirectUrl != undefined ? redirectUrl : ""
     })
 }

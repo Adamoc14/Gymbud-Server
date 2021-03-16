@@ -14,7 +14,7 @@ const conversationSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message"
     }]
-}),
+}, {timestamps: true}),
 
     // JOI documentation for error handling for schemas - https://www.youtube.com/watch?v=PwUoiTt2oKM&ab_channel=NoobCoder&fbclid=IwAR1FlAFIDWyItHSy9aSgFyGrWd9zGXgjQuL3wby1WWR27guh5okMXxERPxM
     conversationValidationSchema = Joi.object().keys({

@@ -68,9 +68,10 @@ userRouter.post("/login", async (req, res, next) => {
             }
             req.logIn(userNormal, err => {
                 if (err) return sendError(res, err);
-                req.session.save(() => {
+                req.session.save(async() => {
                     req.session.user = req.user;
-                    sendSuccess(res, "You are now successfully logged in", req.user, "Home");
+                    const userLoggingIn =  await req.user.populate("Conversations").populate("Buds").populate("Activities").execPopulate();
+                    sendSuccess(res, "You are now successfully logged in", userLoggingIn, "Home");
                 });
             });
         })(req, res, next)
