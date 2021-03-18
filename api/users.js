@@ -18,7 +18,11 @@ const options = {
 
 // ____Getting_All_Users_____
 userRouter.get("/", async (req, res) => {
-    const users = await user.find()
+    let users = await 
+    user.find()
+        .populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Messages']})
+        .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
+        .populate({path: 'Buds'})
     res.send(users)
 })
 
@@ -70,7 +74,7 @@ userRouter.post("/login", async (req, res, next) => {
                 if (err) return sendError(res, err);
                 req.session.save(async() => {
                     req.session.user = req.user;
-                    const userLoggingIn =  await req.user.populate("Conversations").populate("Buds").populate("Activities").populate({path: "Activities", populate:[{ path: 'Creator'} , {path: 'Participants'}]}).execPopulate();
+                    const userLoggingIn =  await req.user.populate("Conversations").populate({path: "Conversations", populate:[{ path: 'Sender'} , {path: 'Receiver'} , {path: 'Messages'}]}).populate("Buds").populate("Activities").populate({path: "Activities", populate:[{ path: 'Creator'} , {path: 'Participants'}]}).execPopulate();
                     sendSuccess(res, "You are now successfully logged in", userLoggingIn, "Home");
                 });
             });

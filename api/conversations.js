@@ -17,7 +17,7 @@ const options = {
 
 // Getting all conversations
 conversationRouter.get("/", async (req, res) => {
-    const conversations = await Conversation.find({}).populate("Messages").populate("Sender").populate("Receiver");
+    const conversations = await Conversation.find({}).populate("Messages").populate("Sender").populate("Receiver").execPopulate();
     res.send(conversations);
   });
 
@@ -46,8 +46,8 @@ conversationRouter.post('/:conversationId/new_message', async (req, res) => {
     try {
         const { error } = messageValidationSchema.validate(req.body, options);
         if (error !== undefined) errors.push(error) && res.send(errors)
-        const { Content, sender } = req.body
-        const messageCreated = await Message.create({ Content, sender })
+        const { Content, Sender } = req.body
+        const messageCreated = await Message.create({ Content, Sender })
         const { conversationId } = req.params 
         let conversationFound = await Conversation.findById(conversationId)
         conversationFound.Messages.push(messageCreated)
