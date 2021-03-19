@@ -23,7 +23,10 @@ const errors = [];
 //_____Getting_All_Activities________
 activityRouter.get("/", async(req,res) => {
     try {
-        const activities = await activity.find({}).populate("Participants").populate("Creator");
+        const activities = 
+        await activity.find({})
+        .populate({path : 'Participants', populate: ['Conversations', 'Buds', 'Activities']})
+        .populate({path : 'Creator' , populate: ['Conversations', 'Buds', 'Activities']})
         res.send(activities)
     } catch (error) {
         console.log(error)

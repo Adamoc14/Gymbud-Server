@@ -17,7 +17,11 @@ const options = {
 
 // Getting all conversations
 conversationRouter.get("/", async (req, res) => {
-    const conversations = await Conversation.find({}).populate("Messages").populate("Sender").populate("Receiver").execPopulate();
+    const conversations = 
+    await Conversation.find({})
+    .populate({path : 'Sender', populate: ['Conversations', 'Buds', 'Activities']})
+    .populate({path : 'Receiver' , populate: ['Conversations', 'Buds', 'Activities']})
+    .populate({path : 'Messages'})
     res.send(conversations);
   });
 
