@@ -12,7 +12,7 @@ const messageSchema = mongoose.Schema({
   // JOI documentation for error handling for schemas - https://www.youtube.com/watch?v=PwUoiTt2oKM&ab_channel=NoobCoder&fbclid=IwAR1FlAFIDWyItHSy9aSgFyGrWd9zGXgjQuL3wby1WWR27guh5okMXxERPxM
 messageValidationSchema = Joi.object().keys({
     Content: Joi.string().trim().required(),
-    sender: Joi.object().keys({
+    Sender: Joi.object().keys({
         senderName: Joi.string().trim().required(),
         senderId: Joi.string().trim().required(),
     })

@@ -20,7 +20,7 @@ const options = {
 userRouter.get("/", async (req, res) => {
     let users = await 
     user.find()
-        .populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Receiver.Conversations', 'Reciever.Activities', 'Messages']})
+        .populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Receiver.Conversations', 'Reciever.Activities', 'Messages', 'Messages.Sender.senderId']})
         .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
         .populate({path: 'Buds'})
     res.send(users)
