@@ -87,10 +87,36 @@ userRouter.post("/login", async (req, res, next) => {
 
 
 // ____Getting_User_By_Id_____
-userRouter.get('/:id', async (req, res) => {
-    const { id } = req.params,
-        singleUser = await user.find({ _id: id })
-    res.send(singleUser)
+userRouter.get('/:userId', async (req, res) => {
+    let errors = [];
+    try {
+         // Check the id is not null and trim it 
+         req.params.userId = req?.params?.userId ?? errors.push("Invalid Id observed, undefined or null values were observed");
+         req.params.userId = req?.params?.userId?.trim() ?? errors.push("Couln't parse invalid id with spaces");
+
+         // Error Handling 
+        if(errors.length > 0){
+            res.status(500).send(errors);
+        }
+
+        // Get the valid id
+        let searching_user_id =  req?.params?.userId;
+
+         // Find the user 
+        let user_found = 
+        await user.findById(searching_user_id)
+        .populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Receiver.Conversations', 'Reciever.Activities', 'Messages', 'Messages.Sender.senderId']})
+        .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
+        .populate({path: 'Buds'});
+
+        // Return user 
+        res.status(200).send(user_found);
+
+    } catch {
+
+    }
+
+
 })
 
 // // ____Updating_User_By_Id_____

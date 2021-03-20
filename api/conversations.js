@@ -23,7 +23,70 @@ conversationRouter.get("/", async (req, res) => {
     .populate({path : 'Receiver' , populate: ['Conversations', 'Buds', 'Activities']})
     .populate({path : 'Messages'})
     res.send(conversations);
-  });
+});
+
+
+conversationRouter.get('/:conversationId', async(req, res) => {
+    let errors = [];
+    try {
+        // Check the id is not null and trim it 
+        req.params.conversationId = req?.params?.conversationId ?? errors.push("Invalid Id observed, undefined or null values were observed");
+        req.params.conversationId = req?.params?.conversationId?.trim() ?? errors.push("Couln't parse invalid id with spaces");
+        
+        // Error Handling 
+        if(errors.length > 0){
+            res.status(500).send(errors);
+        }
+
+        // Get the valid id
+        let searching_conversation_id =  req?.params?.conversationId;
+
+        // Find the conversation 
+        let conversation_found = await Conversation.findById(searching_conversation_id);
+
+        // Populate the messages 
+        conversation_found = await conversation_found?.populate("Messages").execPopulate()
+        
+        // Return last message
+        res.status(200).send(conversation_found);
+
+    } catch (error){
+        console.log(error);
+    }
+})
+
+conversationRouter.get('/:conversationId/last_message', async(req, res) => {
+    let errors = [];
+    try {
+        // Check the id is not null and trim it 
+        req.params.conversationId = req?.params?.conversationId ?? errors.push("Invalid Id observed, undefined or null values were observed");
+        req.params.conversationId = req?.params?.conversationId?.trim() ?? errors.push("Couln't parse invalid id with spaces");
+        
+        // Error Handling 
+        if(errors.length > 0){
+            res.status(500).send(errors);
+        }
+
+        // Get the valid id
+        let searching_conversation_id =  req?.params?.conversationId;
+
+        // Find the conversation 
+        let conversation_found = await Conversation.findById(searching_conversation_id);
+
+        // Populate the messages 
+        conversation_found = await conversation_found?.populate("Messages").execPopulate()
+
+        // Sort the conversations by date
+        let sorted_conversations_by_date = conversation_found?.Messages?.sort((b, a) => a.createdAt - b.createdAt);
+        
+        // Return last message
+        res.status(200).send(sorted_conversations_by_date[0]);
+
+    } catch (error){
+        console.log(error);
+    }
+})
+
 
 conversationRouter.post('/new_conversation', async(req, res) => {
     let errors = [];
@@ -61,20 +124,6 @@ conversationRouter.post('/:conversationId/new_message', async (req, res) => {
     } catch (error) {
         res.send(error)
     }
-    // Conversation.update(
-    //     { _id: req.query.id },
-    //     { $push: { conversation: req.body } },
-    //     (err, data) => {
-    //         if (err) {
-    //             console.log('Error saving message...')
-    //             console.log(err)
-
-    //             res.status(500).send(err)
-    //         } else {
-    //             res.status(201).send(data)
-    //         }
-    //     }
-    // )
 })
 
 conversationRouter.get('/get/conversationList', (req, res) => {
@@ -115,23 +164,7 @@ conversationRouter.get('/get/conversation', (req, res) => {
     })
 })
 
-conversationRouter.get('/get/lastMessage', (req, res) => {
-    const id = req.query.id
 
-    mongoData.find({ _id: id }, (err, data) => {
-        if (err) {
-            res.status(500).send(err)
-        } else {
-            let convData = data[0].conversation
-
-            convData.sort((b, a) => {
-                return a.timestamp - b.timestamp;
-            });
-
-            res.status(200).send(convData[0])
-        }
-    })
-})
 
 // General Helper Method to send Success message back to Client when Error occurs and redirect
 const sendSuccess = (res, successMsg, createduser, redirectUrl) => {
