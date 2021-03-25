@@ -17,12 +17,71 @@ const options = {
 
 // Getting all conversations
 conversationRouter.get("/", async (req, res) => {
-    const conversations = 
-    await Conversation.find({})
-    .populate({path : 'Sender', populate: ['Conversations', 'Buds', 'Activities']})
-    .populate({path : 'Receiver' , populate: ['Conversations', 'Buds', 'Activities']})
-    .populate({path : 'Messages'})
+    let conversations = await
+    Conversation.find({})
+    .populate({
+        path: "Sender",
+        populate: {
+            path: "Conversations",
+            populate: {
+                path: "Sender"
+            }
+        }
+    })
+    .populate({
+        path: "Sender",
+        populate: {
+            path: "Conversations",
+            populate: {
+                path: "Receiver"
+            }
+        }
+    })
+    .populate({
+        path: "Sender",
+        populate: {
+            path: "Activities",
+            populate: {
+                path: "Participants"
+            }
+        }
+    })
+    .populate({
+        path: "Receiver",
+        populate: {
+            path: "Conversations",
+            populate: {
+                path: "Sender"
+            }
+        }
+    })
+    .populate({
+        path: "Receiver",
+        populate: {
+            path: "Conversations",
+            populate: {
+                path: "Receiver"
+            }
+        }
+    })
+    .populate({
+        path: "Receiver",
+        populate: {
+            path: "Activities",
+            populate: {
+                path: "Participants"
+            }
+        }
+    })
+    // .populate({path: "Sender", populate: ['Conversations','Activities'] })
+    // .populate({path: "Receiver", populate: ['Conversations','Activities']}).exec()
     res.send(conversations);
+    // Conversation.find().populate({path : 'Sender', populate: ['Conversations', 'Conversations.Sender', 'Buds', 'Activities', 'Activities.Participants']})
+    // .populate({path : 'Receiver' , populate: ['Conversations', 'Buds', 'Activities', 'Activities.Participants']})
+    // .populate({path : 'Messages'}).exec();
+    // res.send(conversations);
+    
+
 });
 
 
@@ -45,7 +104,64 @@ conversationRouter.get('/:conversationId', async(req, res) => {
         let conversation_found = await Conversation.findById(searching_conversation_id);
 
         // Populate the messages 
-        conversation_found = await conversation_found?.populate("Messages").execPopulate()
+        conversation_found = await conversation_found
+        .populate({
+            path: "Sender",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Sender"
+                }
+            }
+        })
+        .populate({
+            path: "Sender",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Receiver"
+                }
+            }
+        })
+        .populate({
+            path: "Sender",
+            populate: {
+                path: "Activities",
+                populate: {
+                    path: "Participants"
+                }
+            }
+        })
+        .populate({
+            path: "Receiver",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Sender"
+                }
+            }
+        })
+        .populate({
+            path: "Receiver",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Receiver"
+                }
+            }
+        })
+        .populate({
+            path: "Receiver",
+            populate: {
+                path: "Activities",
+                populate: {
+                    path: "Participants"
+                }
+            }
+        })
+        .populate("Messages").execPopulate();
+
+
         
         // Return last message
         res.status(200).send(conversation_found);
@@ -101,8 +217,65 @@ conversationRouter.post('/new_conversation', async(req, res) => {
         receiverFound?.Conversations?.push(conversationCreated._id)
         await senderFound.save()
         await receiverFound.save()
-        conversationCreated = await conversationCreated.populate("Sender").populate("Receiver").populate("Messages").execPopulate()
-        sendSuccess(res, "", conversationCreated)
+        
+        // conversationCreated = await conversationCreated.populate({path : 'Sender', populate: ['Conversations', 'Buds', 'Activities']})
+        // populate({path : 'Receiver', populate: ['Conversations', 'Buds', 'Activities']})
+        // .populate("Messages").execPopulate()
+        conversationCreated = await conversationCreated.populate({
+            path: "Sender",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Sender"
+                }
+            }
+        })
+        .populate({
+            path: "Sender",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Receiver"
+                }
+            }
+        })
+        .populate({
+            path: "Sender",
+            populate: {
+                path: "Activities",
+                populate: {
+                    path: "Participants"
+                }
+            }
+        })
+        .populate({
+            path: "Receiver",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Sender"
+                }
+            }
+        })
+        .populate({
+            path: "Receiver",
+            populate: {
+                path: "Conversations",
+                populate: {
+                    path: "Receiver"
+                }
+            }
+        })
+        .populate({
+            path: "Receiver",
+            populate: {
+                path: "Activities",
+                populate: {
+                    path: "Participants"
+                }
+            }
+        }).execPopulate()
+        sendSuccess(res, "You have successfully created a conversation", conversationCreated)
     } catch (error) {
         res.send(error)
     }

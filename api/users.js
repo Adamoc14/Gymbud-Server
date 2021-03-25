@@ -19,10 +19,112 @@ const options = {
 // ____Getting_All_Users_____
 userRouter.get("/", async (req, res) => {
     let users = await 
-    user.find()
-        .populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Receiver.Conversations', 'Reciever.Activities', 'Messages', 'Messages.Sender.senderId']})
-        .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
-        .populate({path: 'Buds'})
+    user.find().select('-Password')
+    .populate({
+        path: 'Conversations',
+        populate: {
+            path: 'Sender', 
+            populate: {
+                path: 'Conversations'
+            }
+        }
+    })
+    .populate({
+        path: 'Conversations',
+        populate: {
+            path: 'Sender', 
+            populate: {
+                path: 'Activities'
+            }
+        }
+    })
+    .populate({
+        path: 'Conversations',
+        populate: {
+            path: 'Receiver', 
+            populate: {
+                path: 'Conversations'
+            }
+        }
+    })
+    .populate({
+        path: 'Conversations',
+        populate: {
+            path: 'Receiver', 
+            populate: {
+                path: 'Activities'
+            }
+        }
+    })
+    .populate({
+        path: 'Conversations',
+        populate: {
+            path: 'Messages', 
+        }
+    })
+    .populate({
+        path: 'Sender',
+        populate: {
+            path: 'Activities',
+            populate: {
+                path: 'Participants',
+                populate: {
+                    path: 'Conversations'
+                }
+            }
+        }
+    })
+    .populate({
+        path: 'Activities',
+        populate: {
+            path: 'Participants',
+            populate: {
+                path: 'Buds'
+            }
+        }
+    })
+    .populate({
+        path: 'Activities',
+        populate: {
+            path: 'Participants',
+            populate: {
+                path: 'Activities'
+            }
+        }
+    })
+    .populate({
+        path: 'Creator',
+        populate: {
+            path: 'Participants',
+            populate: {
+                path: 'Conversations'
+            }
+        }
+    })
+    .populate({
+        path: 'Creator',
+        populate: {
+            path: 'Participants',
+            populate: {
+                path: 'Buds'
+            }
+        }
+    })
+    .populate({
+        path: 'Creator',
+        populate: {
+            path: 'Participants',
+            populate: {
+                path: 'Activities'
+            }
+        }
+    })
+    .exec()
+    // user.find()
+    //     .populate({path: "Conversations" , populate: ['Sender' , {path: 'Sender', populate: {'Conversations'}}, 'Receiver', 'Receiver.Conversations', 'Receiver.Activities', 'Messages', 'Messages.Sender.senderId']})
+    //     .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
+    //     .populate({path: 'Buds'})
+    //     .exec()
     res.send(users)
 })
 
@@ -104,7 +206,7 @@ userRouter.get('/:userId', async (req, res) => {
 
          // Find the user 
         let user_found = 
-        await user.findById(searching_user_id)
+        await user.findById(searching_user_id).select('-Password')
         .populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Receiver.Conversations', 'Reciever.Activities', 'Messages', 'Messages.Sender.senderId']})
         .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
         .populate({path: 'Buds'});
@@ -127,10 +229,12 @@ userRouter.put('/:id', async (req, res) => {
         // BcryptJS - https://www.youtube.com/watch?v=-RCnNyD0L-s&ab_channel=WebDevSimplified
         const hashedPass = await bcrypt.hash(Password, 10);
         Password = hashedPass;
-        await user.findByIdAndUpdate(req.params.id, { Username, Password, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed }, { new: true }, (err, updatedUser) => {
-            if (err) console.log(err)
-            sendSuccess(res, "You're details have been updated", updatedUser, "login");
-        })
+        let updatedUser = await user.findByIdAndUpdate(req.params.id, { Username, Password, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed }, {new: true})
+        updatedUser = await updatedUser.select('-Password').populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Messages']})
+        .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
+        .populate({path: 'Buds'}).execPopulate();
+        sendSuccess(res, "You're details have been updated", updatedUser, "login");
+        
     } catch (errorMsg) {
         sendError(res, errorMsg, "UpdateProfilePage");
     }

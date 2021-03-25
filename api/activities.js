@@ -25,6 +25,16 @@ activityRouter.get("/", async(req,res) => {
     try {
         const activities = 
         await activity.find({})
+        .populate({
+            path: 'Participants',
+            populate: {
+                path: 'Conversations',
+                populate: {
+                    path: 'Sender'
+                }
+            }
+        })
+        .populate("Creator")
         .populate({path : 'Participants', populate: ['Conversations', 'Buds', 'Activities']})
         .populate({path : 'Creator' , populate: ['Conversations', 'Buds', 'Activities']})
         res.send(activities)
@@ -57,7 +67,7 @@ activityRouter.post("/addUser", async(req, res) => {
         const {activityId, userId} = req.query;
         if(!activityId) errors.push("No Activity was provided") && sendError(res, errors)
         else {
-            const activityFound = await activity.findById(activityId);
+            let activityFound = await activity.findById(activityId);
             const userFound = await user.findById(userId);
             if(!userFound && !userFound.Participants) errors.push("No user was found with these credentials") && sendError(res,errors)
             if(!activityFound && !activityFound.Participants ) errors.push("No Activity was found with these credentials") && sendError(res, errors)
@@ -68,7 +78,9 @@ activityRouter.post("/addUser", async(req, res) => {
                 activityFound.Participants.push(userId);
                 await userFound.save()
                 await activityFound.save();
-                sendSuccess(res, "You have successfully signed up for this activity");
+                activityFound = await activityFound.populate({path : 'Participants', populate: ['Conversations', 'Buds', 'Activities']})
+                .populate({path : 'Creator' , populate: ['Conversations', 'Buds', 'Activities']}).execPopulate()
+                sendSuccess(res, "You have successfully signed up for this activity",activityFound);
             }
         } 
         
