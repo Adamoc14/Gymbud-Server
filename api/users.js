@@ -226,14 +226,14 @@ userRouter.get('/:userId', async (req, res) => {
 
 // // ____Updating_User_By_Id_____
 userRouter.put('/:id', async (req, res) => {
-    let { Password } = req.body;
+    // let { Password } = req.body;
     const { Username, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed } = req.body
     try {
         // BcryptJS - https://www.youtube.com/watch?v=-RCnNyD0L-s&ab_channel=WebDevSimplified
-        const hashedPass = await bcrypt.hash(Password, 10);
-        Password = hashedPass;
-        let updatedUser = await user.findByIdAndUpdate(req.params.id, { Username, Password, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed }, {new: true})
-        updatedUser = await updatedUser.select('-Password').populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Messages']})
+        // const hashedPass = await bcrypt.hash(Password, 10);
+        // Password = hashedPass;
+        let updatedUser = await user.findByIdAndUpdate(req.params.id, { Username, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed }, {new: true}).select('-Password')
+        updatedUser = await updatedUser.populate({path: "Conversations" , populate: ['Sender' , 'Receiver', 'Messages']})
         .populate({path: 'Activities' , populate: ['Creator', 'Participants']})
         .populate({path: 'Buds'}).execPopulate();
         sendSuccess(res, "You're details have been updated", updatedUser, "login");

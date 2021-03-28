@@ -12,8 +12,8 @@ const app = express(),
 // Middlewares 
 
 // These allow me to parse application/JSON data or form-encoded(HTML form POST) data on my server to retrieve req.body values
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json())
+app.use(express.urlencoded({ extended: false , limit: '50mb' }));
+app.use(express.json({limit: '50mb'}))
 app.use(
     cors({
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
