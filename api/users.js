@@ -150,6 +150,7 @@ userRouter.post("/", async (req, res) => {
                 const hashedPass = await bcrypt.hash(Password, 10);
                 Password = hashedPass;
                 let createdUser = await user.create({ Username, Password, Profile_Url, Name, Email, Gender, DOB, Preferred_Intensity, Fitness_Level, Preferred_Age_Range, Preferred_Distance_Range, Resources, Outdoor_Activities_Enjoyed })
+                createdUser = createdUser.select('-Password')
                 sendSuccess(res, "You are now registered and can log in", createdUser, "login");
             } catch (errorMsg) {
                 sendError(res, errorMsg, "Activity_Details");
@@ -176,7 +177,9 @@ userRouter.post("/login", async (req, res, next) => {
                 if (err) return sendError(res, err);
                 req.session.save(async() => {
                     req.session.user = req.user;
-                    const userLoggingIn =  await req.user.populate("Conversations").populate({path: "Conversations", populate:[{ path: 'Sender'} , {path: 'Receiver'} , {path: 'Messages'}]}).populate("Buds").populate("Activities").populate({path: "Activities", populate:[{ path: 'Creator'} , {path: 'Participants'}]}).execPopulate();
+                    let userLoggingIn = await user.findById(req.user.id).select('-Password')
+                    userLoggingIn = await userLoggingIn.populate("Conversations").populate({path: "Conversations", populate:[{ path: 'Sender'} , {path: 'Receiver'} , {path: 'Messages'}]}).populate("Buds").populate("Activities").populate({path: "Activities", populate:[{ path: 'Creator'} , {path: 'Participants'}]}).execPopulate();;
+                    // let userLoggingIn =  await req.user.populate("Conversations").populate({path: "Conversations", populate:[{ path: 'Sender'} , {path: 'Receiver'} , {path: 'Messages'}]}).populate("Buds").populate("Activities").populate({path: "Activities", populate:[{ path: 'Creator'} , {path: 'Participants'}]}).execPopulate();
                     sendSuccess(res, "You are now successfully logged in", userLoggingIn, "Home");
                 });
             });
